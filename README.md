@@ -6,7 +6,7 @@ MFCC feature extraction + ONNX-based wake word detection compatible with
 
 ## Live demo
 
-Open [`demo.html`](demo.html) in a browser (served over HTTPS or localhost). Select a wake word from the built-in list of models from [precise-lite-models](https://github.com/OpenVoiceOS/precise-lite-models), click **Load model**, then **Start microphone**.
+Open [`index.html`](https://tigregotico.github.io/precise-onnx-js) in a browser (served over HTTPS or localhost). Select a wake word from the built-in list of models from [precise-lite-models](https://github.com/OpenVoiceOS/precise-lite-models), click **Load model**, then **Start microphone**.
 
 <img width="752" height="837" alt="image" src="https://github.com/user-attachments/assets/4f75d7b5-288c-4cb7-8d5f-809529d17cfc" />
 
