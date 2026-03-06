@@ -1,0 +1,25 @@
+{
+  "name": "precise-onnx-js",
+  "version": "0.1.0",
+  "type": "commonjs",
+  "description": "Browser/Node.js port of ovos-ww-plugin-precise-onnx: MFCC + ONNX wake word detection",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./src/mfcc": "./src/mfcc.js",
+    "./src/wakeword": "./src/wakeword.js"
+  },
+  "scripts": {
+    "test":    "node --test test/*.test.js",
+    "vectors": "python test/generate_ww_vectors.py"
+  },
+  "keywords": ["wake-word", "onnx", "mfcc", "precise", "ovos", "mycroft", "hivemind", "voice"],
+  "license": "Apache-2.0",
+  "engines": { "node": ">=18.0.0" },
+  "peerDependencies": {
+    "onnxruntime-web": ">=1.14.0"
+  },
+  "peerDependenciesOptional": {
+    "onnxruntime-web": true
+  }
+}
