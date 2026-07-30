@@ -9,7 +9,7 @@ node --test test/*.test.js
 # or: npm test
 ```
 
-Requires Node.js 18+. No `npm install` needed — the library has no runtime dependencies beyond an ONNX runtime (only needed for `load()`; tests mock the session).
+Requires Node.js 18+. No `npm install` is needed. The library has no runtime dependencies beyond an ONNX runtime, which is only needed for `load()`. Tests mock the session.
 
 ## Regenerating Python reference vectors
 
@@ -40,10 +40,10 @@ Writes `test/ww_vectors.json`. Commit the updated file so JS test runs are repro
 
 | Test | What it checks |
 |------|----------------|
-| Seq 1 results match Python | Fire pattern: `[F,F,F,T,F,F,F,F,F,F,T]` — fires on 4th consecutive |
+| Seq 1 results match Python | Fire pattern: `[F,F,F,T,F,F,F,F,F,F,T]`, firing on the 4th consecutive |
 | Seq 1 activations match Python | Internal counter after each step |
 | Seq 2 (all zeros) never fires | 10 steps of 0.0 → all false |
-| Seq 3 (boundary 0.5) never fires | `prob > 1-sensitivity` is strict; 0.5 is not `> 0.5` |
+| Seq 3 (boundary 0.5) never fires | `prob > 1-sensitivity` is strict, and 0.5 is not `> 0.5` |
 | Cooldown value matches Python | `-floor(8 * 2048 / chunkSize) = -8` |
 | Re-fires after cooldown | 8+ low-prob steps + 4 high → fires again |
 
@@ -59,7 +59,7 @@ Writes `test/ww_vectors.json`. Commit the updated file so JS test runs are repro
 
 All values compared against `precise_props` from `ww_vectors.json`.
 
-### `_updateVectors` — rolling buffer (5 tests)
+### `_updateVectors`: rolling buffer (5 tests)
 
 | Test | What it checks |
 |------|----------------|
@@ -69,7 +69,7 @@ All values compared against `precise_props` from `ww_vectors.json`.
 | After consumption, buffer drains correctly | `windowAudio.length === hopSamples` after 1 frame |
 | MFCC matrix rolls on second chunk | Oldest rows drop, new rows appended |
 
-### `mfccSpec` equivalence — zeros (4 tests)
+### `mfccSpec` equivalence: zeros (4 tests)
 
 | Test | What it checks |
 |------|----------------|
@@ -78,7 +78,7 @@ All values compared against `precise_props` from `ww_vectors.json`.
 | `frame[0][1..12]` all zero | DCT of zero log-mels is zero |
 | ATOL for all coefficients ≤ 1e-3 | All 13 coefficients, all frames |
 
-### `mfccSpec` equivalence — 440 Hz sine (4 tests)
+### `mfccSpec` equivalence: 440 Hz sine (4 tests)
 
 | Test | What it checks |
 |------|----------------|
@@ -87,7 +87,7 @@ All values compared against `precise_props` from `ww_vectors.json`.
 | `frame[-1]` all coefficients within ATOL | Last frame |
 | No NaN/Inf in any frame | Numerical stability check |
 
-### `mfccSpec` equivalence — white noise seed 42 (4 tests)
+### `mfccSpec` equivalence: white noise seed 42 (4 tests)
 
 | Test | What it checks |
 |------|----------------|
@@ -96,11 +96,11 @@ All values compared against `precise_props` from `ww_vectors.json`.
 | `frame[-1]` all coefficients within ATOL | |
 | No NaN/Inf | |
 
-### Integration — predict pipeline (1 test)
+### Integration: predict pipeline (1 test)
 
 | Test | What it checks |
 |------|----------------|
-| `predict` with mock session returning 0.99 | Fires after 4 consecutive calls; returns `boolean` |
+| `predict` with mock session returning 0.99 | Fires after 4 consecutive calls and returns `boolean` |
 
 ---
 
@@ -108,7 +108,7 @@ All values compared against `precise_props` from `ww_vectors.json`.
 
 1. `test/generate_ww_vectors.py` runs with the Python reference (`sonopy`, `ovos-ww-plugin-precise-onnx`) and writes exact float32 values to `test/ww_vectors.json`.
 2. `test/wakeword.test.js` loads the JSON and compares JS output against those values.
-3. MFCC coefficients use `ATOL = 1e-3` to account for float32 truncation (Python stores `np.float32`; intermediate calculations are float64 in both Python and JS).
+3. MFCC coefficients use `ATOL = 1e-3` to account for float32 truncation. Python stores `np.float32`, and intermediate calculations are float64 in both Python and JS.
 4. Probability/CDF comparisons use `ATOL = 1e-6` or `1e-12` since those remain float64 throughout.
 
 ---
@@ -123,3 +123,6 @@ All values compared against `precise_props` from `ww_vectors.json`.
 | `mfcc.sine_440` | Frames for 6400-sample 440 Hz sine |
 | `mfcc.noise_seed42` | Frames for 6400-sample uniform noise (seed 42) |
 | `precise_props` | `window_samples`, `hop_samples`, `buffer_samples`, `n_features`, `n_mfcc` |
+
+---
+[← Wake word API](wakeword.md) · [Home](../README.md) · [AI usage →](ai-usage.md)

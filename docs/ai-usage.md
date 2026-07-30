@@ -6,7 +6,7 @@ This document explains how and where AI assistance (Claude, by Anthropic) was us
 
 ## Summary
 
-This library — including all source code, tests, test vector generators, and documentation — was written by Claude Sonnet 4.6 during a pair-programming session with a human developer. The human set direction, reviewed outputs, and approved the final results. Claude wrote essentially all of the code.
+Claude Sonnet 4.6 wrote this library, including all source code, tests, test vector generators, and documentation, during a pair-programming session with a human developer. The human set direction, reviewed outputs, and approved the final results. Claude wrote essentially all of the code.
 
 ---
 
@@ -16,12 +16,12 @@ This library — including all source code, tests, test vector generators, and d
 
 The original `mfcc.js` in `hivemind-webspeech` had several bugs relative to `sonopy.mfcc_spec` (the Python reference used by `ovos-ww-plugin-precise-onnx`):
 
-- Applied a Hamming window (sonopy uses no window — rectangular frames)
+- Applied a Hamming window (sonopy uses no window, only rectangular frames)
 - Power formula missing `/fftSize` division
 - Filterbank grid used a floating-point Hz-to-bin formula instead of `floor(hz * nBins / sr)`
 - Missing `correct_grid` step (sonopy prevents duplicate filter indices)
 - Wrong log epsilon (`1e-6` instead of `Number.EPSILON ≈ 2.22e-16`)
-- First MFCC coefficient was the DCT output; sonopy replaces it with `log(sum(power))`
+- First MFCC coefficient was the DCT output, but sonopy replaces it with `log(sum(power))`
 
 These bugs were found by Claude by inspecting the Python source via `inspect.getsource()` and comparing against the JS output.
 
@@ -38,7 +38,7 @@ Claude ported `ThresholdDecoder`, `TriggerDetector`, and `PreciseOnnxWakeWord` f
 - The rolling MFCC buffer and matrix-shift logic in `_updateVectors`
 - A lazy `_getMfccSpec()` resolver for cross-environment compatibility (browser `<script>`, bundler, Node.js)
 
-One JS-specific bug was fixed during this process: `-(x-mu)**2` is a SyntaxError in JS (unary minus before `**`); Claude rewrote it as `-(((x - mu) ** 2))`.
+One JS-specific bug was fixed during this process. `-(x-mu)**2` is a SyntaxError in JS, because of the unary minus before `**`. Claude rewrote it as `-(((x - mu) ** 2))`.
 
 ### 4. Created the entire `precise-onnx-js` repository
 
@@ -61,11 +61,11 @@ Claude designed and wrote the entire test suite, including:
 
 ### 6. Wrote the Python vector generator (`test/generate_ww_vectors.py`)
 
-Claude wrote the Python script that calls the reference Python libraries and writes `ww_vectors.json`, including installing `sonopy` and `onnxruntime` into the workspace venv to verify the script ran correctly.
+Claude wrote the Python script that calls the reference Python libraries and writes `ww_vectors.json`. This included installing `sonopy` and `onnxruntime` into the workspace venv, to verify the script ran correctly.
 
 ### 7. Wrote all documentation
 
-All files in `docs/` — including this one — were written by Claude.
+Claude wrote all files in `docs/`, including this one.
 
 ---
 
@@ -80,7 +80,7 @@ All files in `docs/` — including this one — were written by Claude.
 
 ## Why this matters
 
-The core technical challenge in this library is that `sonopy.mfcc_spec` has several non-obvious implementation choices (no windowing, specific power normalization, `correct_grid`) that differ from textbook MFCC descriptions and from other JS MFCC libraries. Getting these wrong produces results that look plausible but fail on real models.
+The core technical challenge in this library is that `sonopy.mfcc_spec` has several non-obvious implementation choices: no windowing, specific power normalization, and `correct_grid`. These choices differ from textbook MFCC descriptions and from other JS MFCC libraries. Getting them wrong produces results that look plausible but fail on real models.
 
 Claude found these discrepancies by reading both the Python source and the JS output, not by reading documentation. The validation approach (Python-generated vectors + JS tests comparing to 1e-3 tolerance) was also designed by Claude to make the correctness argument explicit and reproducible.
 
@@ -89,3 +89,6 @@ Claude found these discrepancies by reading both the Python source and the JS ou
 ## Model
 
 Claude Sonnet 4.6 (`claude-sonnet-4-6`), accessed via Claude Code CLI.
+
+---
+[← Testing](testing.md) · [Home](../README.md)

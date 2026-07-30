@@ -12,7 +12,7 @@ Computes MFCC features from a Float32 audio signal.
 
 | Argument | Type | Default (Precise) | Description |
 |----------|------|-------------------|-------------|
-| `audio` | `Float32Array` | — | Normalized audio samples in `[-1, 1]` |
+| `audio` | `Float32Array` | none | Normalized audio samples in `[-1, 1]` |
 | `sampleRate` | number | `16000` | Sample rate in Hz |
 | `windowSize` | number | `1600` | Analysis window size in samples (100 ms) |
 | `hopSize` | number | `800` | Hop between windows in samples (50 ms) |
@@ -34,7 +34,7 @@ Number of frames: `floor((audio.length - windowSize) / hopSize) + 1` (zero if `a
 frames = [audio[i-windowSize : i] for i in range(windowSize, len(audio)+1, hopSize)]
 ```
 
-No windowing function is applied — frames are raw rectangular slices. This matches sonopy's `chop_array` which uses no Hamming or Hann window.
+No windowing function is applied. Frames are raw rectangular slices. This matches sonopy's `chop_array`, which uses no Hamming or Hann window.
 
 ### 2. Power spectrum (`powerSpec`)
 
@@ -54,9 +54,9 @@ Triangular mel-scale filters are built using:
 
 1. **Mel scale:** `1127 * ln(1 + f/700)`
 2. **Grid:** `numFilt + 2` equally-spaced points on the mel scale from 0 Hz to `sampleRate` Hz
-3. **Bin indices:** `grid_idx[i] = floor(melToHz(gridMels[i]) * nBins / sampleRate)` — integer truncation
+3. **Bin indices:** `grid_idx[i] = floor(melToHz(gridMels[i]) * nBins / sampleRate)`, with integer truncation
 4. **`correct_grid`:** if consecutive grid indices are equal, the later one is pushed forward to ensure all filters are distinct
-5. **Filter weights:** rising edge is `linspace(0, 1, n, endpoint=False)` = `k/n`; falling edge is `linspace(1, 0, n, endpoint=False)` = `(n-k)/n`
+5. **Filter weights:** the rising edge is `linspace(0, 1, n, endpoint=False)` = `k/n`. The falling edge is `linspace(1, 0, n, endpoint=False)` = `(n-k)/n`.
 
 The filterbank is cached per `(sampleRate, numFilt, nBins)` key (equivalent to Python's `@lru_cache`).
 
@@ -99,7 +99,7 @@ Each frame is cast to `Float32Array` before being returned. This matches the pre
 
 | Function | Description |
 |----------|-------------|
-| `mfccSpec(...)` | Main entry point — full pipeline |
+| `mfccSpec(...)` | Main entry point: full pipeline |
 | `powerSpec(audio, windowSize, hopSize, fftSize)` | Frames → power spectra |
 | `filterbanks(sampleRate, numFilt, nBins)` | Build (or cache) triangular mel filters |
 | `dctII(x, numCoeffs)` | Ortho-normalized DCT-II |
@@ -113,7 +113,7 @@ These are bugs found in naive JS ports of MFCC that break compatibility with son
 
 | Bug | Correct behaviour |
 |-----|-------------------|
-| Apply Hamming/Hann window | No window — rectangular frames |
+| Apply Hamming/Hann window | No window: use rectangular frames |
 | `power[k] = re[k]² + im[k]²` | Divide by `fftSize` |
 | `log(max(x, 1e-6))` | Use `Number.EPSILON` (≈ 2.22e-16), not 1e-6 |
 | `coeffs[0]` from DCT | Replace with `safeLog(sum(power))` |
@@ -121,3 +121,6 @@ These are bugs found in naive JS ports of MFCC that break compatibility with son
 | Skip `correct_grid` | Required when duplicate bin indices appear |
 
 All of these were identified by comparing against Python vectors.
+
+---
+[Home](../README.md) · [Wake word API →](wakeword.md)
