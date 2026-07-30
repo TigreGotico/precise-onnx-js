@@ -12,10 +12,10 @@ Open [`index.html`](https://tigregotico.github.io/precise-onnx-js) in a browser 
 
 ## Features
 
-- **`mfccSpec`** — exact port of Python's `sonopy.mfcc_spec` (validated against Python test vectors)
-- **`ThresholdDecoder`** — calibrates raw ONNX sigmoid output into a linear probability
-- **`TriggerDetector`** — debounces consecutive activations
-- **`PreciseOnnxWakeWord`** — streaming wake word engine with rolling MFCC buffer
+- **`mfccSpec`**: exact port of Python's `sonopy.mfcc_spec` (validated against Python test vectors)
+- **`ThresholdDecoder`**: calibrates raw ONNX sigmoid output into a linear probability
+- **`TriggerDetector`**: debounces consecutive activations
+- **`PreciseOnnxWakeWord`**: streaming wake word engine with a rolling MFCC buffer
 
 All classes are validated against the Python reference implementation using pytest-style vectors
 stored in `test/ww_vectors.json`.
@@ -41,7 +41,7 @@ async function main() {
 </script>
 ```
 
-### Browser (via bundler — esbuild / webpack / vite)
+### Browser (via bundler: esbuild, webpack, or vite)
 
 ```js
 import { PreciseOnnxWakeWord } from 'precise-onnx-js';
@@ -65,8 +65,8 @@ const ww = await PreciseOnnxWakeWord.load('./hey_mycroft.onnx');
 
 Computes MFCC features matching `sonopy.mfcc_spec`.
 
-- `audio` — `Float32Array` of normalized audio samples
-- Returns `Float32Array[]` — one row per frame, length `numCoeffs`
+- `audio`: `Float32Array` of normalized audio samples
+- Returns `Float32Array[]`: one row per frame, with length `numCoeffs`
 
 Default parameters matching Precise models:
 ```
@@ -77,8 +77,8 @@ sampleRate=16000, windowSize=1600, hopSize=800, numFilt=20, fftSize=512, numCoef
 
 Maps raw ONNX sigmoid output → calibrated probability.
 
-- `muStds` — array of `[mu, std]` pairs (Precise default: `[[6, 4]]`)
-- `center` — center point (Precise default: `0.2`)
+- `muStds`: array of `[mu, std]` pairs (Precise default: `[[6, 4]]`)
+- `center`: center point (Precise default: `0.2`)
 - `.decode(rawOutput)` → `float` in `[0, 1]`
 
 ### `class TriggerDetector(chunkSize, sensitivity, triggerLevel)`
@@ -140,13 +140,13 @@ See [`docs/testing.md`](docs/testing.md) for full test coverage details.
 | [`docs/mfcc.md`](docs/mfcc.md) | MFCC pipeline internals, sonopy equivalence, common porting mistakes |
 | [`docs/wakeword.md`](docs/wakeword.md) | `ThresholdDecoder`, `TriggerDetector`, `PreciseOnnxWakeWord` API reference |
 | [`docs/testing.md`](docs/testing.md) | Test suite details, vector generation, cross-language validation |
-| [`docs/ai-usage.md`](docs/ai-usage.md) | AI usage transparency — how Claude was used to create this library |
+| [`docs/ai-usage.md`](docs/ai-usage.md) | AI usage transparency: how Claude was used to create this library |
 
 ## Relationship to hivemind-webspeech
 
 [hivemind-webspeech](https://github.com/JarbasHiveMind/hivemind-webspeech) uses this library
 as a dependency for its wake-word operating mode. `src/mfcc.js` and `src/wakeword.js` in that
-repo are thin re-export wrappers; the canonical implementation lives here.
+repo are thin re-export wrappers. The canonical implementation lives here.
 
 ## Credits
 

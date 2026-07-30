@@ -8,7 +8,7 @@ Port of `ovos-ww-plugin-precise-onnx/inference.py`. Three classes: `ThresholdDec
 
 ## `ThresholdDecoder`
 
-Maps the raw sigmoid output of the ONNX model (a float in `[0, 1]`) to a calibrated probability that accounts for the distribution of the model's internal logit values.
+Maps the raw sigmoid output of the ONNX model (a float in `[0, 1]`) to a calibrated probability. The mapping accounts for the distribution of the model's internal logit values.
 
 ### Constructor
 
@@ -35,15 +35,15 @@ const prob = decoder.decode(0.7); // → calibrated probability in [0, 1]
 Steps:
 1. Convert raw sigmoid output to logit space via `asigmoid(x) = -ln(1/x - 1)`
 2. Clamp to `[minOut, maxOut]` and look up in the precomputed cumulative distribution `cd`
-3. Linearly rescale: values below `center` map to `[0, 0.5]`; above map to `[0.5, 1]`
+3. Linearly rescale: values below `center` map to `[0, 0.5]`, and values above map to `[0.5, 1]`
 
-Special cases: `rawOutput === 0.0` → `0`; `rawOutput === 1.0` → `1`.
+Special cases: `rawOutput === 0.0` returns `0`, and `rawOutput === 1.0` returns `1`.
 
 ### Static helpers
 
 ```javascript
 ThresholdDecoder.sigmoid(x)   // 1 / (1 + exp(-x))
-ThresholdDecoder.asigmoid(x)  // -ln(1/x - 1)  — inverse sigmoid
+ThresholdDecoder.asigmoid(x)  // -ln(1/x - 1): inverse sigmoid
 ThresholdDecoder.pdf(x, mu, std)  // Gaussian PDF
 ```
 
@@ -74,7 +74,7 @@ Internal `activation` counter behaviour:
 - Activating chunk: `activation += 1`
 - Non-activating chunk and `activation > 0`: `activation -= 1`
 - `activation > triggerLevel`: fire! Reset `activation = -floor(8 * 2048 / chunkSize)`
-- Negative `activation`: cooldown — counter increments toward 0, inhibiting false triggers
+- Negative `activation`: cooldown. The counter increments toward 0, which stops false triggers.
 
 With defaults (`chunkSize=2048`, `triggerLevel=3`), cooldown is `-8` and the detector fires on the 4th consecutive high-probability chunk.
 
@@ -82,11 +82,11 @@ With defaults (`chunkSize=2048`, `triggerLevel=3`), cooldown is `-8` and the det
 
 ```javascript
 const td = new TriggerDetector(2048, 0.5, 3);
-td.update(0.9); // false — activation=1
-td.update(0.9); // false — activation=2
-td.update(0.9); // false — activation=3
-td.update(0.9); // true  — activation=-8 (cooldown)
-td.update(0.9); // false — activation=-7 (still cooling down)
+td.update(0.9); // false: activation=1
+td.update(0.9); // false: activation=2
+td.update(0.9); // false: activation=3
+td.update(0.9); // true: activation=-8 (cooldown)
+td.update(0.9); // false: activation=-7 (still cooling down)
 ```
 
 ---
@@ -159,8 +159,11 @@ Resets `windowAudio` and the MFCC matrix to all-zeros. Call after a false positi
 
 | Environment | Setup |
 |-------------|-------|
-| Browser `<script>` | Load `mfcc.js` then `wakeword.js`; `ort` from CDN before both |
-| Browser bundler | `import { PreciseOnnxWakeWord } from 'precise-onnx-js'`; `ort` must be `globalThis.ort` |
+| Browser `<script>` | Load `mfcc.js` then `wakeword.js`, and load `ort` from a CDN before both |
+| Browser bundler | `import { PreciseOnnxWakeWord } from 'precise-onnx-js'`. `ort` must be `globalThis.ort`. |
 | Node.js | `globalThis.ort = require('onnxruntime-node')` before calling `load()` |
 
-The `mfccSpec` function is resolved lazily at first call via `_getMfccSpec()`, so load order of `mfcc.js` vs `wakeword.js` does not cause errors as long as both are loaded before `predict()` is called.
+The `mfccSpec` function is resolved lazily at first call, via `_getMfccSpec()`. Load order of `mfcc.js` and `wakeword.js` does not matter, as long as both load before `predict()` is called.
+
+---
+[← MFCC feature extraction](mfcc.md) · [Home](../README.md) · [Testing →](testing.md)
