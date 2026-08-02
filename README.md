@@ -148,6 +148,10 @@ See [`docs/testing.md`](docs/testing.md) for full test coverage details.
 as a dependency for its wake-word operating mode. `src/mfcc.js` and `src/wakeword.js` in that
 repo are thin re-export wrappers. The canonical implementation lives here.
 
+## License
+
+Apache-2.0, matching upstream [ovos-ww-plugin-precise-onnx](https://github.com/OpenVoiceOS/ovos-ww-plugin-precise-onnx). See [LICENSE](LICENSE).
+
 ## Credits
 
 Funded by [NGI0 Commons Fund](https://nlnet.nl/project/OpenVoiceOS) / [NLnet](https://nlnet.nl)
